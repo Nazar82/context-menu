@@ -1,0 +1,10 @@
+#cars{
+    position: relative;
+    height: 800px;
+    width: 1500px;
+    margin: auto;
+    background-image: url("../images/carshow.jpg");
+}
+h1 {
+    text-align: center;
+}

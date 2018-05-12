@@ -4,7 +4,7 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "babel": "babel --presets es2015 js/main.js -o build/main.js",
+    "babel": "babel --presets es2015 js --out-dir build",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "babel-watch js/main.js"
   },

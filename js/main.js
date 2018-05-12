@@ -1,78 +1,30 @@
-(function () {
-    const carsjson = '{"element":"cars", "id":"carsMenu", "items":[{"title":"Porsche","disabled":"true","models":[{"title":"Sedan","disable":"false"},{"title":"Hatchback","disable":"false"}]},{"title":"BMW","disabled":"false","models":[{"title":"Cabriolet","disable":"false"},{"title":"Break","disable":"false"}]},{"title":"Opel","disabled":"false"}, {"title":"Porsche","disabled":"false"}, {"title":"Porsche1","disabled":"false"},{"title":"Porsche2","disabled":"false"},{"title":"Porsche3","disabled":"false"}, {"title":"Porsche4","disabled":"false"}, {"title":"Porsche5","disabled":"false"}, {"title":"Porsche6","disabled":"false"}, {"title":"Porsche7","disabled":"false"}, {"title":"Porsche8","disabled":"false"}]}';
-    
-    const containerStyles = {
-        'position': 'absolute',
-        'width': '120px',
-        'padding': '0',
-        'margin': '0',
-        'list-style-type': 'none',
-        'background-color': 'grey',
+(function (outerData) {
 
-
-    };
-    const ulStyles = {
-        'padding': '0',
-        'margin': '0',
-        'list-style-type': 'none',
-        'border': '1px solid green',
-
-    };
-    const liStyles = {
-        'background-color': 'beige',
-        'padding': '2px 10px',
-        'border-right': '1px solid green',
-        'position': 'relative',
-
-    };
-
-
-
-    const arrowUpStyles = {
-        'position': 'absolute',
-        'top': '50%',
-        'left': '50%',
-        'transform': 'translate(-50% , -50% )',
-        'border-left': '7px solid transparent',
-        'border-right': '7px solid transparent',
-        'border-bottom': '7px solid black'
-    }
-
-    const arrowDownStyles = {
-        'position': 'absolute',
-        'top': '50%',
-        'left': '50%',
-        'transform': 'translate(-50% , -50% )',
-        'border-left': '7px solid transparent',
-        'border-right': '7px solid transparent',
-        'border-top': '7px solid black'
-    }
-
- 
     function addStyles(styles, element) {
-        for (var styleName in styles) {
+        for (let styleName in styles) {
             element.style[styleName] = styles[styleName];
         }
     }
 
+    function createElement(element, styles) {
+        let newElement = document.createElement(element);
+        addStyles(styles, newElement);
+        return newElement;
+    }
+
     function getMenuPosition(event, id) {
 
-        const windowWidth = window.innerWidth;
-        const windowHeight = window.innerHeight;
-        const menuContainer = document.getElementById(id);
+        let windowWidth = window.innerWidth;
+        let windowHeight = window.innerHeight;
+        let menuContainer = document.getElementById(id);
 
-        const menuWidth = menuContainer.offsetWidth;
-        const menuHeight = menuContainer.offsetHeight;
-        const x = event.offsetX;
-        const y = event.offsetY;
+        let menuWidth = menuContainer.offsetWidth;
+        let menuHeight = menuContainer.offsetHeight;
+        let x = event.offsetX;
+        let y = event.offsetY;
 
         let top = y;
         let left = x;
-
-        console.log('y', y);
-        console.log('x', x);
-
-
 
         if ((windowWidth - x) < menuWidth) {
             left = x - menuWidth;
@@ -88,101 +40,78 @@
 
         if (menuHeight > windowHeight) {
             top = 0;
-
         }
-
-
         return {
             x: left,
             y: top
-
         }
     }
 
-    function selectItems(windowHeight) {
+    const menuMargin = 70;
+    const listItemHeight = 20;
 
-
-        const numberOfItems = Math.floor((windowHeight - 70) / 20);
-
-
-
-        return {
-            numberOfItems: numberOfItems,
-            start: 0,
-            end: 0
-
-        }
-
+    function countItems(windowHeight) {
+        return Math.floor((windowHeight - menuMargin) / listItemHeight);
     }
 
-    function callBackOnMenuItem(e) {
-        if (this.classList.value.includes('disabledItem')) {
-            e.preventDefault();
-        } else {
-            alert(`The name of the car You clicked on is ${this.innerText}.`);
-        }
-
+    function callBackOnMenuItem(event) {
+        this.classList.value.includes('disabledItem') ? event.preventDefault() : alert(`The name of the car You clicked on is ${this.innerText}.`);
     }
-    const cars = JSON.parse(carsjson);
-    let listStart = 0;
 
+    function createListItem(val) {
+
+        const item = createElement('LI', outerData.liStyles);
+
+        item.classList.add('menuItem');
+        item.innerText = val.title;
+        item.onclick = callBackOnMenuItem;
+
+        if (val.disabled === 'true') {
+            item.classList.add('disabledItem');
+            item.style.backgroundColor = 'red';
+        }
+        return item;
+    }
+
+    function creatScroll() {
+        const scroll = createElement('DIV', outerData.scrollStyles);
+        scroll.classList.add('scroll');
+        return scroll;
+    }
+
+    const cars = JSON.parse(outerData.carsjson);
+    const elemetToShowMenu = document.getElementById(cars.element);
 
     function renderMenu(data, event) {
+        let listStart = 0;
+        let windowHeight = window.innerHeight;
+        let itemsToShow = countItems(windowHeight);
+
         if (document.getElementById('menuContainer')) {
             document.getElementById('menuContainer').remove();
         };
 
-        const container = document.createElement('DIV');
+        let container = createElement('DIV', outerData.containerStyles);
         container.id = 'menuContainer';
         container.onclick = (event) => {
-                event.stopPropagation();
-           
+            event.stopPropagation();
         }
 
-        const list = document.createElement('UL');
+        let list = createElement('UL', outerData.ulStyles);
         list.id = data.id;
 
-        addStyles(containerStyles, container);
-        addStyles(ulStyles, list);
-
-        const windowHeight = window.innerHeight;
-
-
-        const itemsToShow = selectItems(windowHeight);
-
-        console.log(itemsToShow);
-
-
-        data.items.slice(listStart, itemsToShow.numberOfItems + 1).forEach(val => {
-            const item = document.createElement('LI');
-            item.classList.add('menuItem');
-
-            item.innerText = val.title;
-            item.onclick = callBackOnMenuItem;
-
-            addStyles(liStyles, item);
-            if (val.disabled === 'true') {
-                console.log(val.disabled);
-                item.classList.add('disabledItem');
-                item.style.backgroundColor = 'red';
-
-            }
-
-
+        data.items.slice(listStart, itemsToShow + 1).forEach(val => {
+            const item = createListItem(val);
             list.appendChild(item);
         });
 
         container.appendChild(list);
-        const elemetToShowMenu = document.getElementById(data.element);
         elemetToShowMenu.appendChild(container);
 
+        if (windowHeight < data.items.length * listItemHeight + menuMargin) {
+            let scrollUp = creatScroll();
 
-        if (windowHeight < data.items.length * 20 + 60) {
-            const scroll = document.createElement('div');
-            scroll.classList.add('scroll');
-            scroll.style.height = '22px';
-            scroll.style.position = 'relative';
-            scroll.onclick = () => {
+            scrollUp.onclick = () => {
                 let additionalItem = 0;
                 listStart--;
                 if (listStart === 0) {
@@ -190,98 +119,65 @@
                     additionalItem++;
                 }
 
-                if (data.items.length - listStart > itemsToShow.numberOfItems) {
+                if ((data.items.length - listStart) > itemsToShow) {
                     document.getElementsByClassName('scroll')[1].style.display = 'block';
                 }
 
-                const list = document.getElementById("carsMenu");
-                list.innerHTML = "";
-                data.items.slice(listStart, itemsToShow.numberOfItems + listStart + additionalItem).forEach(val => {
-                    const item = document.createElement('LI');
-                    item.classList.add('menuItem');
-                    item.innerText = val.title;
-                    item.onclick = callBackOnMenuItem;
-                    addStyles(liStyles, item);
+                document.getElementById("carsMenu").innerHTML = "";
+                data.items.slice(listStart, itemsToShow + listStart + additionalItem).forEach(val => {
+                    let item = createListItem(val);
                     list.appendChild(item);
-
                 });
-
             };
-            const arrowUp = document.createElement('div');
-            addStyles(arrowUpStyles, arrowUp);
-            scroll.appendChild(arrowUp);
-            container.prepend(scroll);
+            let arrowUp = createElement('DIV', outerData.arrowUpStyles);
+            scrollUp.appendChild(arrowUp);
+            container.prepend(scrollUp);
 
-
-            const scroll2 = document.createElement('div');
-            scroll2.classList.add('scroll');
-            scroll2.style.height = '22px';
-            scroll2.style.position = 'relative';
-            scroll2.onclick = () => {
+            let scrollDown = creatScroll();
+            scrollDown.onclick = () => {
                 let additionalItem = 0;
                 listStart++;
                 if (listStart > 0) {
                     document.getElementsByClassName('scroll')[0].style.display = 'block';
                 }
-                if (data.items.length - listStart === itemsToShow.numberOfItems) {
+                if (data.items.length - listStart === itemsToShow) {
                     document.getElementsByClassName('scroll')[1].style.display = 'none';
                     additionalItem--;
                 }
-
-
-                const list = document.getElementById("carsMenu");
-                list.innerHTML = "";
-                data.items.slice(listStart + additionalItem, itemsToShow.numberOfItems + listStart).forEach(val => {
-                    const item = document.createElement('LI');
-                    item.classList.add('menuItem');
-                    item.innerText = val.title;
-                    item.onclick = callBackOnMenuItem;
-                    addStyles(liStyles, item);
+                document.getElementById("carsMenu").innerHTML = "";
+                data.items.slice(listStart + additionalItem, itemsToShow + listStart).forEach(val => {
+                    let item = createListItem(val);
                     list.appendChild(item);
                 });
 
             };
-            const arrowDown = document.createElement('div');
-            addStyles(arrowDownStyles, arrowDown);
-            scroll2.appendChild(arrowDown);
-            container.appendChild(scroll2);
+            let arrowDown = createElement('DIV', outerData.arrowDownStyles);
+            scrollDown.appendChild(arrowDown);
+            container.appendChild(scrollDown);
 
             if (listStart === 0) {
-                console.log(listStart);
-                scroll.style.display = 'none';
+                scrollUp.style.display = 'none';
             }
         }
 
-
-
-        const position = getMenuPosition(event, container.id);
-
+        let position = getMenuPosition(event, container.id);
         container.style.top = position.y + 'px';
         container.style.left = position.x + 'px';
-
-
     }
 
-    const item = document.getElementById(cars.element);
-    item.addEventListener('mousedown', (event) => {
-        item.addEventListener("contextmenu", function (e) {
+    elemetToShowMenu.addEventListener('mousedown', (event) => {
+        elemetToShowMenu.addEventListener("contextmenu", function (e) {
             e.preventDefault();
         }, false);
         if (event.button === 2 && event.target.id === 'cars') {
-             
-            console.log(event.target.id);
             renderMenu(cars, event);
         }
-
     });
-    
-    
 
     window.addEventListener('click', () => {
         if (document.getElementById('menuContainer')) {
             document.getElementById('menuContainer').remove();
         };
-        });
-        
-        
-})();
+    });
+
+})(data);

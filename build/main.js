@@ -1,56 +1,17 @@
 'use strict';
 
-(function () {
-    var carsjson = '{"element":"cars", "id":"carsMenu", "items":[{"title":"Porsche","disabled":"true","models":[{"title":"Sedan","disable":"false"},{"title":"Hatchback","disable":"false"}]},{"title":"BMW","disabled":"false","models":[{"title":"Cabriolet","disable":"false"},{"title":"Break","disable":"false"}]},{"title":"Opel","disabled":"false"}, {"title":"Porsche","disabled":"false"}, {"title":"Porsche1","disabled":"false"},{"title":"Porsche2","disabled":"false"},{"title":"Porsche3","disabled":"false"}, {"title":"Porsche4","disabled":"false"}, {"title":"Porsche5","disabled":"false"}, {"title":"Porsche6","disabled":"false"}, {"title":"Porsche7","disabled":"false"}, {"title":"Porsche8","disabled":"false"}]}';
-
-    var containerStyles = {
-        'position': 'absolute',
-        'width': '120px',
-        'padding': '0',
-        'margin': '0',
-        'list-style-type': 'none',
-        'background-color': 'grey'
-
-    };
-    var ulStyles = {
-        'padding': '0',
-        'margin': '0',
-        'list-style-type': 'none',
-        'border': '1px solid green'
-
-    };
-    var liStyles = {
-        'background-color': 'beige',
-        'padding': '2px 10px',
-        'border-right': '1px solid green',
-        'position': 'relative'
-
-    };
-
-    var arrowUpStyles = {
-        'position': 'absolute',
-        'top': '50%',
-        'left': '50%',
-        'transform': 'translate(-50% , -50% )',
-        'border-left': '7px solid transparent',
-        'border-right': '7px solid transparent',
-        'border-bottom': '7px solid black'
-    };
-
-    var arrowDownStyles = {
-        'position': 'absolute',
-        'top': '50%',
-        'left': '50%',
-        'transform': 'translate(-50% , -50% )',
-        'border-left': '7px solid transparent',
-        'border-right': '7px solid transparent',
-        'border-top': '7px solid black'
-    };
+(function (outerData) {
 
     function addStyles(styles, element) {
         for (var styleName in styles) {
             element.style[styleName] = styles[styleName];
         }
+    }
+
+    function createElement(element, styles) {
+        var newElement = document.createElement(element);
+        addStyles(styles, newElement);
+        return newElement;
     }
 
     function getMenuPosition(event, id) {
@@ -67,9 +28,6 @@
         var top = y;
         var left = x;
 
-        console.log('y', y);
-        console.log('x', x);
-
         if (windowWidth - x < menuWidth) {
             left = x - menuWidth;
         }
@@ -85,86 +43,77 @@
         if (menuHeight > windowHeight) {
             top = 0;
         }
-
         return {
             x: left,
             y: top
-
         };
     }
 
-    function selectItems(windowHeight) {
+    var menuMargin = 70;
+    var listItemHeight = 20;
 
-        var numberOfItems = Math.floor((windowHeight - 70) / 20);
-
-        return {
-            numberOfItems: numberOfItems,
-            start: 0,
-            end: 0
-
-        };
+    function countItems(windowHeight) {
+        return Math.floor((windowHeight - menuMargin) / listItemHeight);
     }
 
-    function callBackOnMenuItem(e) {
-        if (this.classList.value.includes('disabledItem')) {
-            e.preventDefault();
-        } else {
-            alert('The name of the car You clicked on is ' + this.innerText + '.');
+    function callBackOnMenuItem(event) {
+        this.classList.value.includes('disabledItem') ? event.preventDefault() : alert('The name of the car You clicked on is ' + this.innerText + '.');
+    }
+
+    function createListItem(val) {
+
+        var item = createElement('LI', outerData.liStyles);
+
+        item.classList.add('menuItem');
+        item.innerText = val.title;
+        item.onclick = callBackOnMenuItem;
+
+        if (val.disabled === 'true') {
+            item.classList.add('disabledItem');
+            item.style.backgroundColor = 'red';
         }
+        return item;
     }
-    var cars = JSON.parse(carsjson);
-    var listStart = 0;
+
+    function creatScroll() {
+        var scroll = createElement('DIV', outerData.scrollStyles);
+        scroll.classList.add('scroll');
+        return scroll;
+    }
+
+    var cars = JSON.parse(outerData.carsjson);
+    var elemetToShowMenu = document.getElementById(cars.element);
 
     function renderMenu(data, event) {
+        var listStart = 0;
+        var windowHeight = window.innerHeight;
+        var itemsToShow = countItems(windowHeight);
+
         if (document.getElementById('menuContainer')) {
             document.getElementById('menuContainer').remove();
         };
 
-        var container = document.createElement('DIV');
+        var container = createElement('DIV', outerData.containerStyles);
         container.id = 'menuContainer';
         container.onclick = function (event) {
             event.stopPropagation();
         };
 
-        var list = document.createElement('UL');
+        var list = createElement('UL', outerData.ulStyles);
         list.id = data.id;
 
-        addStyles(containerStyles, container);
-        addStyles(ulStyles, list);
-
-        var windowHeight = window.innerHeight;
-
-        var itemsToShow = selectItems(windowHeight);
-
-        console.log(itemsToShow);
-
-        data.items.slice(listStart, itemsToShow.numberOfItems + 1).forEach(function (val) {
-            var item = document.createElement('LI');
-            item.classList.add('menuItem');
-
-            item.innerText = val.title;
-            item.onclick = callBackOnMenuItem;
-
-            addStyles(liStyles, item);
-            if (val.disabled === 'true') {
-                console.log(val.disabled);
-                item.classList.add('disabledItem');
-                item.style.backgroundColor = 'red';
-            }
-
+        data.items.slice(listStart, itemsToShow + 1).forEach(function (val) {
+            var item = createListItem(val);
             list.appendChild(item);
         });
 
         container.appendChild(list);
-        var elemetToShowMenu = document.getElementById(data.element);
         elemetToShowMenu.appendChild(container);
 
-        if (windowHeight < data.items.length * 20 + 60) {
-            var scroll = document.createElement('div');
-            scroll.classList.add('scroll');
-            scroll.style.height = '22px';
-            scroll.style.position = 'relative';
-            scroll.onclick = function () {
+        if (windowHeight < data.items.length * listItemHeight + menuMargin) {
+            var scrollUp = creatScroll();
+
+            scrollUp.onclick = function () {
                 var additionalItem = 0;
                 listStart--;
                 if (listStart === 0) {
@@ -172,77 +121,56 @@
                     additionalItem++;
                 }
 
-                if (data.items.length - listStart > itemsToShow.numberOfItems) {
+                if (data.items.length - listStart > itemsToShow) {
                     document.getElementsByClassName('scroll')[1].style.display = 'block';
                 }
 
-                var list = document.getElementById("carsMenu");
-                list.innerHTML = "";
-                data.items.slice(listStart, itemsToShow.numberOfItems + listStart + additionalItem).forEach(function (val) {
-                    var item = document.createElement('LI');
-                    item.classList.add('menuItem');
-                    item.innerText = val.title;
-                    item.onclick = callBackOnMenuItem;
-                    addStyles(liStyles, item);
+                document.getElementById("carsMenu").innerHTML = "";
+                data.items.slice(listStart, itemsToShow + listStart + additionalItem).forEach(function (val) {
+                    var item = createListItem(val);
                     list.appendChild(item);
                 });
             };
-            var arrowUp = document.createElement('div');
-            addStyles(arrowUpStyles, arrowUp);
-            scroll.appendChild(arrowUp);
-            container.prepend(scroll);
+            var arrowUp = createElement('DIV', outerData.arrowUpStyles);
+            scrollUp.appendChild(arrowUp);
+            container.prepend(scrollUp);
 
-            var scroll2 = document.createElement('div');
-            scroll2.classList.add('scroll');
-            scroll2.style.height = '22px';
-            scroll2.style.position = 'relative';
-            scroll2.onclick = function () {
+            var scrollDown = creatScroll();
+            scrollDown.onclick = function () {
                 var additionalItem = 0;
                 listStart++;
                 if (listStart > 0) {
                     document.getElementsByClassName('scroll')[0].style.display = 'block';
                 }
-                if (data.items.length - listStart === itemsToShow.numberOfItems) {
+                if (data.items.length - listStart === itemsToShow) {
                     document.getElementsByClassName('scroll')[1].style.display = 'none';
                     additionalItem--;
                 }
-
-                var list = document.getElementById("carsMenu");
-                list.innerHTML = "";
-                data.items.slice(listStart + additionalItem, itemsToShow.numberOfItems + listStart).forEach(function (val) {
-                    var item = document.createElement('LI');
-                    item.classList.add('menuItem');
-                    item.innerText = val.title;
-                    item.onclick = callBackOnMenuItem;
-                    addStyles(liStyles, item);
+                document.getElementById("carsMenu").innerHTML = "";
+                data.items.slice(listStart + additionalItem, itemsToShow + listStart).forEach(function (val) {
+                    var item = createListItem(val);
                     list.appendChild(item);
                 });
             };
-            var arrowDown = document.createElement('div');
-            addStyles(arrowDownStyles, arrowDown);
-            scroll2.appendChild(arrowDown);
-            container.appendChild(scroll2);
+            var arrowDown = createElement('DIV', outerData.arrowDownStyles);
+            scrollDown.appendChild(arrowDown);
+            container.appendChild(scrollDown);
 
             if (listStart === 0) {
-                console.log(listStart);
-                scroll.style.display = 'none';
+                scrollUp.style.display = 'none';
             }
         }
 
         var position = getMenuPosition(event, container.id);
-
         container.style.top = position.y + 'px';
         container.style.left = position.x + 'px';
     }
 
-    var item = document.getElementById(cars.element);
-    item.addEventListener('mousedown', function (event) {
-        item.addEventListener("contextmenu", function (e) {
+    elemetToShowMenu.addEventListener('mousedown', function (event) {
+        elemetToShowMenu.addEventListener("contextmenu", function (e) {
             e.preventDefault();
         }, false);
         if (event.button === 2 && event.target.id === 'cars') {
-
-            console.log(event.target.id);
             renderMenu(cars, event);
         }
     });
@@ -252,4 +180,4 @@
             document.getElementById('menuContainer').remove();
         };
     });
-})();
+})(data);
