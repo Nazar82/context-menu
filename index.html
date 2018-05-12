@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,16 +8,18 @@
     <title>Context menu</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
-<body>
-    <h1>Right click on the image to open context menu.</h1>
-    <div id="cars">
 
+<body>
+    <div class="container">
+        <p>Right click on the image to open context menu (with scroll).</p>
+        <p>To see small context menu (without scroll) please uncomment json string in build/main.js file.</p>
+        <div id="cars">
+        </div>
     </div>
 
-    <!-- <script src="js/data.js"></script>
-    <script src="js/main.js"></script> -->
     <script src="build/data.js"></script>
     <script src="build/main.js"></script>
 
 </body>
+
 </html>

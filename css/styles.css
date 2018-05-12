@@ -1,10 +1,15 @@
-#cars{
+p {
+    font-size: 30px;
+     text-align: center;
+}
+
+#cars {
     position: relative;
-    height: 800px;
-    width: 1500px;
-    margin: auto;
+    height: 400px;
+    width: 400px;
     background-image: url("../images/carshow.jpg");
+    float: right;
+    margin-top: 150px;
 }
-h1 {
-    text-align: center;
-}
+ 
+
