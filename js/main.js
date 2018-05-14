@@ -77,6 +77,26 @@
             item.classList.add('disabledItem');
             item.style.backgroundColor = '#b4cee8';
         }
+
+        if (val.models) {
+            let arrowLeft = createElement('DIV', outerData.arrowLeftStyles);
+            arrowLeft.onclick = (e) => {
+                e.stopPropagation();
+                let list = createElement('UL', outerData.ulStyles);
+                list.id = 'subMenu';
+                list.style.position = 'absolute';
+                list.style.width = '100px';
+                list.style.left = '119px';
+                list.style.top = '8px';
+                val.models.forEach(el => {
+                    let subItem = createListItem(el);
+
+                    list.appendChild(subItem);
+                });
+                item.appendChild(list);
+            }
+            item.appendChild(arrowLeft);
+        }
         return item;
     }
 
@@ -182,6 +202,12 @@
             renderMenu(cars, event);
         }
 
+    });
+
+    window.addEventListener('click', (event) => {
+        if (document.getElementById('subMenu')) {
+            document.getElementById('subMenu').remove();
+        };
     });
 
     window.addEventListener('click', (event) => {

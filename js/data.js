@@ -46,12 +46,23 @@ const data = (function () {
         'border-top': '7px solid black'
     }
 
+    const arrowLeftStyles = {
+        'position': 'absolute',
+        'top': '50%',
+        'left': '90%',
+        'transform': 'translate(-50% , -50% )',
+        'border-top': '6px solid transparent',
+        'border-bottom': '6px solid transparent',
+        'border-left': '6px solid black'
+    }
+
     return {
         containerStyles: containerStyles,
         ulStyles: ulStyles,
         liStyles: liStyles,
         arrowUpStyles: arrowUpStyles,
         arrowDownStyles: arrowDownStyles,
-        scrollStyles: scrollStyles
+        scrollStyles: scrollStyles,
+        arrowLeftStyles: arrowLeftStyles
     }
 })();
