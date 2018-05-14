@@ -19,7 +19,8 @@ const data = (function () {
     const liStyles = {
         'background-color': 'beige',
         'padding': '2px 10px',
-         'position': 'relative',
+        'position': 'relative',
+        'cursor': 'pointer'
     };
     const scrollStyles = {
         'height': '22px',

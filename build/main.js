@@ -3,10 +3,10 @@
 (function (outerData) {
 
     // JSON for long contextmenu with scroll
-    var carsjson = '{"element":"cars", "id":"carsMenu", "items":[{"title":"Porsche","disabled":"true","models":[{"title":"Sedan","disable":"false"},{"title":"Hatchback","disable":"false"}]},{"title":"BMW","disabled":"false","models":[{"title":"Cabriolet","disable":"false"},{"title":"Break","disable":"false"}]},{"title":"Opel","disabled":"false"}, {"title":"Porsche","disabled":"false"}, {"title":"Porsche1","disabled":"false"},{"title":"Moskvich","disabled":"false"},{"title":"BMW","disabled":"false"}, {"title":"Porsche4","disabled":"false"}, {"title":"Ford","disabled":"false"}, {"title":"Porsche","disabled":"false"}, {"title":"Toyota","disabled":"false"}, {"title":"Kia","disabled":"false"}, {"title":"Alfa Romeo","disabled":"true"}, {"title":"Nissan","disabled":"false"}, {"title":"Audi","disabled":"false"}, {"title":"VAZ","disabled":"true"}, {"title":"Kia","disabled":"false"}, {"title":"VF","disabled":"false"}, {"title":"Ford","disabled":"false"}, {"title":"ZAZ","disabled":"true"}, {"title":"Niva","disabled":"false"}, {"title":"Aston Martin","disabled":"false"}, {"title":"Porsche","disabled":"false"}, {"title":"Citroen","disabled":"false"}, {"title":"Porsche","disabled":"false"}, {"title":"BMW","disabled":"false"}, {"title":"Audi","disabled":"false"}, {"title":"Niva","disabled":"false"}, {"title":"Porsche","disabled":"false"}, {"title":"Honda","disabled":"false"}, {"title":"Toyota","disabled":"false"}, {"title":"Porsche","disabled":"false"}, {"title":"Ford","disabled":"false"}, {"title":"VF","disabled":"false"}, {"title":"Mazda","disabled":"false"}, {"title":"Porsche","disabled":"false"}, {"title":"Jaguar","disabled":"false"}, {"title":"Honda","disabled":"false"}, {"title":"Niva","disabled":"false"}, {"title":"Porsche","disabled":"false"}, {"title":"Ford","disabled":"false"}, {"title":"BMW","disabled":"false"}]}';
+    var carsjson = '{"element":"cars", "id":"carsMenu", "items":[{"title":"Porsche","disabled":"true","models":[{"title":"Sedan","disable":"false"},{"title":"Hatchback","disable":"false"}, {"title":"SUV","disable":"false"}, {"title":"Mini","disable":"true"}]},{"title":"BMW","disabled":"false","models":[{"title":"Cabriolet","disable":"false"},{"title":"Break","disable":"false"}]},{"title":"Opel","disabled":"false"}, {"title":"Porsche","disabled":"false", "models":[{"title":"Sedan","disable":"false"},{"title":"Hatchback","disable":"false"}, {"title":"SUV","disable":"false"}, {"title":"Mini","disable":"true"}]}, {"title":"Porsche1","disabled":"false"},{"title":"Moskvich","disabled":"false"},{"title":"BMW","disabled":"false"}, {"title":"Porsche4","disabled":"false"}, {"title":"Ford","disabled":"false"}, {"title":"Porsche","disabled":"false"}, {"title":"Toyota","disabled":"false"}, {"title":"Kia","disabled":"false"}, {"title":"Alfa Romeo","disabled":"true"}, {"title":"Nissan","disabled":"false"}, {"title":"Audi","disabled":"false"}, {"title":"VAZ","disabled":"true"}, {"title":"Kia","disabled":"false"}, {"title":"VF","disabled":"false"}, {"title":"Ford","disabled":"false"}, {"title":"ZAZ","disabled":"true"}, {"title":"Niva","disabled":"false"}, {"title":"Aston Martin","disabled":"false"}, {"title":"Porsche","disabled":"false"}, {"title":"Citroen","disabled":"false"}, {"title":"Porsche","disabled":"false"}, {"title":"BMW","disabled":"false"}, {"title":"Audi","disabled":"false"}, {"title":"Niva","disabled":"false"}, {"title":"Porsche","disabled":"false"}, {"title":"Honda","disabled":"false"}, {"title":"Toyota","disabled":"false"}, {"title":"Porsche","disabled":"false"}, {"title":"Ford","disabled":"false"}, {"title":"VF","disabled":"false"}, {"title":"Mazda","disabled":"false"}, {"title":"Porsche","disabled":"false"}, {"title":"Jaguar","disabled":"false"}, {"title":"Honda","disabled":"false"}, {"title":"Niva","disabled":"false"}, {"title":"Porsche","disabled":"false"}, {"title":"Ford","disabled":"false"}, {"title":"BMW","disabled":"false"}]}';
 
     // JSON for small contextmenu without scroll
-    // const carsjson = '{"element":"cars", "id":"carsMenu", "items":[{"title":"Porsche","disabled":"true","models":[{"title":"Sedan","disable":"false"},{"title":"Hatchback","disable":"false"}]},{"title":"BMW","disabled":"false","models":[{"title":"Cabriolet","disable":"false"},{"title":"Break","disable":"false"}]},{"title":"Opel","disabled":"false"}, {"title":"Porsche","disabled":"false"}, {"title":"Porsche","disabled":"false"},{"title":"BMW","disabled":"false"},{"title":"Opel","disabled":"false"}, {"title":"Porsche","disabled":"false"}, {"title":"Ford","disabled":"false"}, {"title":"Toyota","disabled":"false"}, {"title":"Honda","disabled":"false"}, {"title":"Porsche","disabled":"false"}]}';
+    // const carsjson = '{"element":"cars", "id":"carsMenu", "items":[{"title":"Porsche","disabled":"true","models":[{"title":"Sedan","disable":"false"},{"title":"Hatchback","disable":"false"}]},{"title":"BMW","disabled":"false","models":[{"title":"Cabriolet","disable":"false"},{"title":"Break","disable":"false"}]},{"title":"Opel","disabled":"false"}, {"title":"Porsche","disabled":"false"}, {"title":"Porsche","disabled":"false"},{"title":"BMW","disabled":"false"},{"title":"Opel","disabled":"false", "models":[{"title":"Sedan","disable":"false"},{"title":"Hatchback","disable":"false"}, {"title":"SUV","disable":"false"}, {"title":"Mini","disable":"true"}]}, {"title":"Porsche","disabled":"false"}, {"title":"Ford","disabled":"false"}, {"title":"Toyota","disabled":"false"}, {"title":"Honda","disabled":"false"}, {"title":"Porsche","disabled":"false"}]}';
 
 
     function addStyles(styles, element) {
@@ -64,19 +64,60 @@
     }
 
     function callBackOnMenuItem(event) {
+        if (document.getElementById('menuContainer')) {
+            document.getElementById('menuContainer').remove();
+        };
         this.classList.value.includes('disabledItem') ? event.preventDefault() : alert('The name of the car You clicked on is ' + this.innerText + '.');
+        event.stopPropagation();
     }
 
     function createListItem(val) {
 
         var item = createElement('LI', outerData.liStyles);
+
         item.classList.add('menuItem');
         item.innerText = val.title;
         item.onclick = callBackOnMenuItem;
 
         if (val.disabled === 'true') {
             item.classList.add('disabledItem');
+            item.style.cursor = 'auto';
             item.style.backgroundColor = '#b4cee8';
+        } else {
+            item.onmouseover = function () {
+                item.style.backgroundColor = '#6795e0';
+            };
+            item.onmouseleave = function () {
+                item.style.backgroundColor = 'beige';
+            };
+        }
+
+        if (val.models && val.disabled != 'true') {
+            var arrowLeft = createElement('DIV', outerData.arrowLeftStyles);
+            arrowLeft.onclick = function (e) {
+
+                if (document.getElementById('subMenu')) {
+                    document.getElementById('subMenu').remove();
+                };
+
+                e.stopPropagation();
+                var list = createElement('UL', outerData.ulStyles);
+                list.id = 'subMenu';
+                list.style.position = 'absolute';
+                list.style.width = '100px';
+                list.style.left = '119px';
+                list.style.top = '8px';
+                if (window.innerWidth - document.getElementById('menuContainer').offsetLeft - 140 < 100) {
+                    list.style.left = '-102px';
+                }
+                val.models.forEach(function (el) {
+                    var subItem = createListItem(el);
+
+                    list.appendChild(subItem);
+                });
+                item.appendChild(list);
+            };
+            item.appendChild(arrowLeft);
         }
         return item;
     }
@@ -187,10 +228,20 @@
         if (document.getElementById('menuContainer')) {
             document.getElementById('menuContainer').remove();
         };
+        if (document.getElementById('subMenu')) {
+            document.getElementById('subMenu').remove();
+        }
+    });
+
+    window.addEventListener('resize', function () {
+        if (document.getElementById('menuContainer')) {
+            document.getElementById('menuContainer').remove();
+        };
     });
 
     window.addEventListener('contextmenu', function (event) {
-        if (event.target.id != 'carsMenu' && !event.target.classList.value.includes('menuItem') && event.target.id != 'cars') {
+
+        if (event.target.id != 'carsMenu' && !event.target.classList.value.includes('menuItem') && !event.target.classList.value.includes('scroll') && event.target.id != 'cars') {
             if (document.getElementById('menuContainer')) {
                 document.getElementById('menuContainer').remove();
             };
